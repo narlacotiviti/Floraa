@@ -717,8 +717,10 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     {
                         JenkinsService jenkinsService = new JenkinsService();
 
-                        deployJob = deployJob + "/jenkins/job/" + strJob;
-                        int lastbuid = jenkinsService.getLastBuild(deployJob, Configuration["JenkinsBuildDeploymentURL"]).Result + 1;
+                        //deployJob = deployJob + "/jenkins/job/" + strJob;
+
+                        int lastbuid = jenkinsService.getLastBuild(deployJob + "/jenkins/job/", deployJob).Result + 1;
+
                         if (strProject == "App-Deployment")
                             msg = "App Deployment with war " + entitiDetails.Buildwar + " to " + entitiDetails.Environment + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
                         else if (strProject == "ETL - Deployment")
@@ -727,6 +729,10 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                                 msg = entitiDetails.Project + " is initiated. Estimated time to complete the deployment is 5 minutes.You will receive the email once the deployment is completed.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
                             else
                                 msg = entitiDetails.Project + " is initiated. Estimated time to complete the deployment is 45 minutes.You will receive the email once the deployment is completed.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
+                        }
+                        else if (strProject == "ICM-Jar-Deploy" || strProject == "ICMS-Realtime-Fuse")
+                        {
+                            msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         }
                         else
                             msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console)";
