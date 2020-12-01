@@ -737,7 +737,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                             msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         }
                         else if (strProject == "ICMS-Realtime-Fuse")
-                        {
+                        {     
+                            //
                             deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICMS_Realtime_Deploy/job/icms_deployer";
                             msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         }
