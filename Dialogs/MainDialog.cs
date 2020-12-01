@@ -730,8 +730,15 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                             else
                                 msg = entitiDetails.Project + " is initiated. Estimated time to complete the deployment is 45 minutes.You will receive the email once the deployment is completed.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
                         }
-                        else if (strProject == "ICM-Jar-Deploy" || strProject == "ICMS-Realtime-Fuse")
+                        else if (strProject == "ICM-Jar-Deploy")
                         {
+                            deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICM_Batch_Jobs/job/ICM-Jar-Deployment";
+
+                            msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
+                        }
+                        else if (strProject == "ICMS-Realtime-Fuse")
+                        {
+                            deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICMS_Realtime_Deploy/job/icms_deployer";
                             msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         }
                         else
