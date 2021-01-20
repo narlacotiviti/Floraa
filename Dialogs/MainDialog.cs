@@ -451,6 +451,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
         private async Task<DialogTurnResult> TriggerServiceMethod(WaterfallStepContext stepContext, EntitiDetails entitiDetails, CancellationToken cancellationToken)
         {
             string strTag = "";
+            bool IsCrumbRequired = false;
             if (entitiDetails.Tag.ToUpper() == "COMMITFILE")
             {
                 string msg = "";
@@ -564,7 +565,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     entitiDetails.Tag = (entitiDetails.Environment == "PROD") ? entitiDetails.Tag + " and @" + entitiDetails.Environment : entitiDetails.Tag + " and @" + entitiDetails.Environment + " and @" + entitiDetails.Client;
                     sPOSTURL = Configuration["JenkinsURL2"] + "/job/RMS_Execution/buildWithParameters?TagName=@" + entitiDetails.Tag.Replace("QA Backend", "QA_DIRECT").Replace("QA Meca", "QA") + "&EmailID=" + entitiDetails.Email + "&SrcName=Floraa&Environment=" + env;
                 }
-
+                IsCrumbRequired = true;
+                strJenkinUrl = Configuration["JenkinsURL2"];
             }
             else
             {
@@ -577,7 +579,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
             }
             HttpWebRequest requestObjPost = (HttpWebRequest)HttpWebRequest.Create(sPOSTURL);
             requestObjPost.Method = "POST";
-            if (Convert.ToBoolean(Configuration["IsCrumbRequired"]))
+            //if (Convert.ToBoolean(Configuration["IsCrumbRequired"])IsCrumbRequired)
+            if (IsCrumbRequired)
                 requestObjPost.Headers["Jenkins-Crumb"] = generateJenkinsCrumb(strJenkinUrl);
             requestObjPost.Headers["Authorization"] = Configuration["JenkinsAuthKey"];
             requestObjPost.ContentType = "application/json";
@@ -720,7 +723,6 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         //deployJob = deployJob + "/jenkins/job/" + strJob;
 
                         int lastbuid = jenkinsService.getLastBuild(deployJob + "/jenkins/job/", deployJob).Result + 1;
-
                         if (strProject == "App-Deployment")
                             msg = "App Deployment with war " + entitiDetails.Buildwar + " to " + entitiDetails.Environment + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
                         else if (strProject == "ETL - Deployment")
@@ -737,7 +739,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                             msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         }
                         else if (strProject == "ICMS-Realtime-Fuse")
-                        {     
+                        {
                             //
                             deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICMS_Realtime_Deploy/job/icms_deployer";
                             msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";

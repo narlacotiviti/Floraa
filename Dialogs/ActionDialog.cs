@@ -183,7 +183,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         await stepContext.Context.SendActivityAsync(MessageFactory.Text("Test data generation not configured for the selected portfolio. Please try with other portfolio"), cancellationToken);
                         return await stepContext.EndDialogAsync(null, cancellationToken);
                     }
-                        
+
                 default:
                     return await stepContext.NextAsync(entitiDetails.Project, cancellationToken);
             }
@@ -345,7 +345,23 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
                     if (!(entitiDetails.Environment == "PROD" && entitiDetails.Project == "RMS"))
                     {
-                        return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                        if (entitiDetails.Environment == "QA" && entitiDetails.Project == "Annocoder")
+                        {
+                            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                            new PromptOptions
+                            {
+                                Prompt = MessageFactory.Text("Please select the Client"),
+                                Choices = new List<Choice>() {
+                                    new Choice() { Value = "MECA", Synonyms = new List<string>() { "MECA" } },
+                                    new Choice() { Value = "QRWEB", Synonyms = new List<string>() { "QRWEB" } },
+                                    new Choice() { Value = "RMS", Synonyms = new List<string>() { "RMS" } }, },
+                                RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+
+                            }, cancellationToken);
+                        }
+                        else
+                        {
+                            return await stepContext.PromptAsync(nameof(ChoicePrompt),
                            new PromptOptions
                            {
                                Prompt = MessageFactory.Text("Please select the Client"),
@@ -353,6 +369,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                                //Choices = (entitiDetails.Project != "Annocoder")?GetRapidEnvironments("Client"),// ChoiceFactory.ToChoices(new List<string> { "ROC", "Humana" }),
                                RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                            }, cancellationToken);
+                        }
                     }
                 }
 
