@@ -559,6 +559,10 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     entitiDetails.Tag = entitiDetails.Tag + " and @" + entitiDetails.Environment + " and @" + entitiDetails.Client;
                     sPOSTURL = Configuration["JenkinsURL2"] + "/job/Annocoder/buildWithParameters?TagName=@" + entitiDetails.Tag + "&EmailID=" + entitiDetails.Email + "&SrcName=Floraa&Environment=" + env;
                 }
+                else if (entitiDetails.Project.ToUpper() == "PMT")
+                {
+                    sPOSTURL = Configuration["JenkinsURL2"] + "/job/PMT/buildWithParameters?TagName=@" + entitiDetails.Tag + "&EmailID=" + entitiDetails.Email + "&SrcName=Floraa&Environment=" + entitiDetails.Environment.ToLower();
+                }
                 else
                 {
                     var env = (entitiDetails.Environment == "PROD") ? entitiDetails.Environment.ToLower() : ((entitiDetails.Environment + "_" + entitiDetails.Client).Replace("QA Backend", "QA_DIRECT").Replace("QA Meca", "QA").Replace("-", "_")).ToLower();

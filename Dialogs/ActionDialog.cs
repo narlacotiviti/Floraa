@@ -221,7 +221,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                             new PromptOptions
                             {
                                 Prompt = MessageFactory.Text("Please select the environment"),
-                                Choices = GetAnnocoderEnvironments(entitiDetails.Project),
+                                Choices = GetRapidEnvironmentByProjectName(entitiDetails.Project),
                                 RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                             }, cancellationToken);
                         }
@@ -236,8 +236,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                                           new PromptOptions
                                           {
                                               Prompt = MessageFactory.Text("Please select the environment"),
-                                              Choices = (entitiDetails.Project != "Annocoder") ? GetRapidEnvironments("Environment") : GetAnnocoderEnvironments("Environment"),
-                                              //Choices = GetRapidEnvironments("Environment"), //ChoiceFactory.ToChoices(new List<string> { "QA Backend", "QA Meca", "UAT", "PROD" }),
+                                              Choices = GetRapidEnvironmentByProjectName(entitiDetails.Project),
                                               RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                                           }, cancellationToken);
                         }
@@ -343,7 +342,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 else
                 {
                     entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
-                    if (!(entitiDetails.Environment == "PROD" && entitiDetails.Project == "RMS"))
+                    if (!(entitiDetails.Environment == "PROD" && entitiDetails.Project == "RMS") && entitiDetails.Project != "PMT")
                     {
                         if (entitiDetails.Environment == "QA" && entitiDetails.Project == "Annocoder")
                         {
@@ -365,8 +364,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                            new PromptOptions
                            {
                                Prompt = MessageFactory.Text("Please select the Client"),
-                               Choices = (entitiDetails.Project != "Annocoder") ? GetRapidEnvironments("Client") : GetAnnocoderEnvironments("Client"),
-                               //Choices = (entitiDetails.Project != "Annocoder")?GetRapidEnvironments("Client"),// ChoiceFactory.ToChoices(new List<string> { "ROC", "Humana" }),
+                               Choices = GetRapidClientsByProjectName(entitiDetails.Project),
                                RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                            }, cancellationToken);
                         }
@@ -468,8 +466,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     {
                         if (entitiDetails.Client == null && (entitiDetails.Project.ToUpper() != "PRODUCTIONDAILYHEALTHCHECK"))
                         {
-
-                            if (!(entitiDetails.Environment == "PROD" && entitiDetails.Project == "RMS"))
+                            if (!(entitiDetails.Environment == "PROD" && entitiDetails.Project == "RMS") && entitiDetails.Project != "PMT")
                                 entitiDetails.Client = ((FoundChoice)stepContext.Result).Value.ToString();
                             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                                 new PromptOptions
@@ -507,7 +504,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Sorry I didn't get you. Please try other word/Execute a service") }, cancellationToken);
                     }
                 case "Trigger_Service":
-                    if (entitiDetails.Portfolio == "Rapid" && entitiDetails.Project.ToUpper() != "PRODUCTIONDAILYHEALTHCHECK") entitiDetails.Tag = ((FoundChoice)stepContext.Result).Value.ToString();
+                    if (entitiDetails.Portfolio == "Rapid" && entitiDetails.Project.ToUpper() != "PRODUCTIONDAILYHEALTHCHECK" && entitiDetails.Project.ToUpper() != "PMT")
+                        entitiDetails.Tag = ((FoundChoice)stepContext.Result).Value.ToString();
                     if (entitiDetails.Project.ToUpper() == "PRODUCTIONDAILYHEALTHCHECK")
                     {
                         msg = $"Please confirm, Do you want to execute {entitiDetails.Portfolio} {" "}  {entitiDetails.Project} ?";
@@ -688,10 +686,10 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 new Choice() { Value = "CTA", Synonyms = new List<string>() { "CTA" } },
                 new Choice() { Value = "PresentationManager", Synonyms = new List<string>() { "Presentation Manager" } },
                 new Choice() { Value = "ICD-IU", Synonyms = new List<string>() { "ICDIU","icd","icd-iu","icdiu" } },
-                 new Choice() { Value = "ClientApps", Synonyms = new List<string>() { "Client apps","client facing apps"} },
-                  new Choice() { Value = "RDA", Synonyms = new List<string>() { "RDA Loaders","Loaders"} },
-                   new Choice() { Value = "ARD", Synonyms = new List<string>() { "Builder ARD"} },
-                   new Choice() { Value = "CPD_SwitchControl", Synonyms = new List<string>() { "Switch Control","SwitchControl"} },
+                new Choice() { Value = "ClientApps", Synonyms = new List<string>() { "Client apps","client facing apps"} },
+                new Choice() { Value = "RDA", Synonyms = new List<string>() { "RDA Loaders","Loaders"} },
+                new Choice() { Value = "ARD", Synonyms = new List<string>() { "Builder ARD"} },
+                new Choice() { Value = "CPD_SwitchControl", Synonyms = new List<string>() { "Switch Control","SwitchControl"} },
 
             };
                     return cardOptions;
@@ -702,6 +700,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
             {
                 new Choice() { Value = "RMS", Synonyms = new List<string>() { "Retrieval Management" } },
                  new Choice() { Value = "Annocoder", Synonyms = new List<string>() { "Annocoder" } },
+                 new Choice() { Value = "PMT", Synonyms = new List<string>() { "Project Management Tool","PMT" } },
 
             };
                     return cardOptions;
@@ -726,7 +725,34 @@ namespace Microsoft.BotBuilderSamples.Dialogs
             }
         }
 
-        private IList<Choice> GetRapidEnvironments(string strType)
+        private IList<Choice> GetRapidEnvironmentByProjectName(string project)
+        {
+            switch (project.ToLower())
+            {
+                case "rms":
+                    return GetRMSChoice("Environment");
+                case "annocoder":
+                    return GetAnnocoderChoice("Environment");
+                case "pmt":
+                    return GetPMTEnvironment();
+                default:
+                    return null;
+            }
+        }
+        private IList<Choice> GetRapidClientsByProjectName(string project)
+        {
+            switch (project.ToLower())
+            {
+                case "rms":
+                    return GetRMSChoice("Client");
+                case "annocoder":
+                    return GetAnnocoderChoice("Client");
+                default:
+                    return null;
+            }
+        }
+
+        IList<Choice> GetRMSChoice(string strType)
         {
             switch (strType)
             {
@@ -746,8 +772,15 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     return null;
             }
         }
-
-        IList<Choice> GetAnnocoderEnvironments(string strType)
+        IList<Choice> GetPMTEnvironment()
+        {
+            var cardOptions = new List<Choice>() {
+                    new Choice() { Value = "QA", Synonyms = new List<string>() { "QA" } },
+                    new Choice() { Value = "UAT", Synonyms = new List<string>() { "UAT" } },
+                    new Choice() { Value = "PROD", Synonyms = new List<string>() { "PROD" } },};
+            return cardOptions;
+        }
+        IList<Choice> GetAnnocoderChoice(string strType)
         {
             switch (strType)
             {
