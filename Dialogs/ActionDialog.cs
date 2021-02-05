@@ -559,6 +559,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         entitiDetails.Tag = ((FoundChoice)stepContext.Result).Value.ToString();//(string)stepContext.Result;
                     else
                         msg = $"Please confirm, Do you want to execute  {entitiDetails.Tag} for {entitiDetails.Project} ?"; //on {entitiDetails.Environment} {entitiDetails.Client} ?";
+                    if(msg=="")
+                        msg = $"Please confirm, Do you want to execute  {entitiDetails.Tag} for {entitiDetails.Project} ?";
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
                 case "Build_Deployment":
                     if (entitiDetails.Project == "App-Deployment" || entitiDetails.Project == "CIT-Deployment")
@@ -734,9 +736,9 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 case "annocoder":
                     return GetAnnocoderChoice("Environment");
                 case "pmt":
-                    return GetPMTEnvironment();
+                    return GetPMTEnvironment();                
                 default:
-                    return null;
+                    return GetPMTEnvironment();
             }
         }
         private IList<Choice> GetRapidClientsByProjectName(string project)
