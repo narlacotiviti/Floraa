@@ -599,7 +599,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         await stepContext.Context.SendActivityAsync(MessageFactory.Text("Triggered " + entitiDetails.Tag + " for " + entitiDetails.Project + ". The results will be sent to your email shortly."), cancellationToken);
                     else
 
-                        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Triggered " + strTag + " for " + entitiDetails.Project + ". The results will be sent to your email shortly. \n You can also see the live execution in below URL: [Click Here](http://usddccntr04:8080/) "), cancellationToken);
+                        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Triggered " + strTag + " for " + entitiDetails.Project + ". The results will be sent to your email shortly. \n You can also see the live execution in below URL: [Click Here](http://usddccntr04.cotiviti.com:8080/#/) "), cancellationToken);
 
                     if (entitiDetails.Tag == "Sanity")
                     {

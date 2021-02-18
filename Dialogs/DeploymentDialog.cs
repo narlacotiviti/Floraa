@@ -302,6 +302,7 @@ namespace CoreBot.Dialogs
                     entitiDetails.HostName = entitiDetails.Environment == "QA(VPMTST1)" ? "usdtrmi03" : "usddevrmi01";
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 dic.Add("QA(VPMTST1)", "VPMTST1");
+                dic.Add("QA(VPMTST1N)", "VPMTST1N");
                 dic.Add("SprintTest(VPMSPTE)", "VPMSPTE");
                 dic.Add("SprintDemo(VPMDEMO)", "VPMDEMO");
                 dic.Add("CICD(VPMCICD)", "VPMCICD");
@@ -658,7 +659,11 @@ namespace CoreBot.Dialogs
                     cardOptions = new List<string>() { "SprintTest(VPMSPTE)", "SprintDemo(VPMDEMO)", "CICD(VPMCICD)" };
 
                     if (!dbScript.Equals("LotusNotes"))
+                    {
                         cardOptions.Add("QA(VPMTST1)");
+                        cardOptions.Add("QA(VPMTST1N)");
+
+                    }
 
                     if (dbScript.Equals("ICMSDB.SQL"))
                     {

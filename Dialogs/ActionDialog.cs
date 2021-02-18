@@ -344,7 +344,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
                     if (!(entitiDetails.Environment == "PROD" && entitiDetails.Project == "RMS") && entitiDetails.Project != "PMT")
                     {
-                        if (entitiDetails.Environment == "QA" && entitiDetails.Project == "Annocoder")
+                        if ((entitiDetails.Environment == "QA" || entitiDetails.Environment =="UAT") && entitiDetails.Project == "Annocoder")
                         {
                             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                             new PromptOptions
