@@ -263,7 +263,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     FeedbackEntity feedbackEntity = new FeedbackEntity();
                     feedbackEntity.PartitionKey = stepContext.Context.Activity.From.Name;
                     feedbackEntity.RowKey = guid = Guid.NewGuid().ToString();
-                    feedbackEntity.Role = storageHelper.GetRole(Configuration, stepContext.Context.Activity.From.AadObjectId, stepContext.Context.Activity.From.AadObjectId).Result;
+                    string sId = stepContext.Context.Activity.From.AadObjectId;
+                    feedbackEntity.Role = storageHelper.GetRole(Configuration, sId, sId).Result;
                     feedbackEntity.Status = "False";
                     feedbackEntity.FeedBack = string.Empty;
                     feedbackEntity.Intent = strIntent;
