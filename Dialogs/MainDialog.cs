@@ -306,7 +306,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
             }
             catch (Exception ex)
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(Configuration["CustomMsg"] + getUserName(stepContext) + ".\n"), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(ex.Message/*Configuration["CustomMsg"]*/ + getUserName(stepContext) + ".\n"), cancellationToken);
                 return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
 
             }
