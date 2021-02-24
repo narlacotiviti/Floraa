@@ -495,36 +495,36 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 var lastBuild = jenkinsService.getLastBuildStatus(entitiDetails.Project).Result;
                 var lastBuildType = lastBuild["actions"];
 
-                if (lastBuild != null)
-                {
-                    var x = lastBuildType[1]["parameters"][0];
-                    var sTagType = lastBuildType[1]["parameters"][0]["value"];
-                    //   var a1 = lastBuildType["_class"]["parameter"];
+                //if (lastBuild != null)
+                //{
+                //    var x = lastBuildType[1]["parameters"][0];
+                //    var sTagType = lastBuildType[1]["parameters"][0]["value"];
+                //    //   var a1 = lastBuildType["_class"]["parameter"];
 
-                    var lastBuildStatus = lastBuild["result"].ToString();
-                    if (string.IsNullOrEmpty(lastBuildStatus) || lastBuildStatus == "{}")
-                    {
-                        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Same user or some other user has already triggerd this project test execution please try after some time."), cancellationToken);
-                        return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
-                    }
-                    else if (sTagType == "@Sanity" || sTagType == "@Regression")
-                    {
-                        var lastBuildTime = (long)lastBuild["timestamp"];
+                //    var lastBuildStatus = lastBuild["result"].ToString();
+                //    if (string.IsNullOrEmpty(lastBuildStatus) || lastBuildStatus == "{}")
+                //    {
+                //        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Same user or some other user has already triggerd this project test execution please try after some time."), cancellationToken);
+                //        return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+                //    }
+                //    else if (sTagType == "@Sanity" || sTagType == "@Regression")
+                //    {
+                //        var lastBuildTime = (long)lastBuild["timestamp"];
 
-                        var timeStamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
+                //        var timeStamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
 
-                        var timeDiference = (timeStamp - lastBuildTime);
+                //        var timeDiference = (timeStamp - lastBuildTime);
 
-                        var timeMinutes = timeDiference / (1000 * 60);
-                        if (timeMinutes <= 1200)
-                        {
-                            var url = lastBuild["url"].ToString() + "Serenity_20Report/";
-                            await stepContext.Context.SendActivityAsync(MessageFactory.Text("This is already executed in last one hour click on the link to view results: [Regression Results](" + url + ")"), cancellationToken);
-                            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+                //        var timeMinutes = timeDiference / (1000 * 60);
+                //        if (timeMinutes <= 1200)
+                //        {
+                //            var url = lastBuild["url"].ToString() + "Serenity_20Report/";
+                //            await stepContext.Context.SendActivityAsync(MessageFactory.Text("This is already executed in last one hour click on the link to view results: [Regression Results](" + url + ")"), cancellationToken);
+                //            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
 
-                        }
-                    }
-                }
+                //        }
+                //    }
+                //}
             }
             else if (entitiDetails.Tag.ToUpper() == "REGRESSION" && entitiDetails.Project == "CCV-CIT")
             {
