@@ -495,8 +495,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
 
                 if (lastBuild != null)
                 {
-                    var x = lastBuildType[0]["parameters"][0];
-                    var sTagType = lastBuildType[0]["parameters"][0]["value"];
+                    var x = lastBuildType[1]["parameters"][0];
+                    var sTagType = lastBuildType[1]["parameters"][0]["value"];
                     //   var a1 = lastBuildType["_class"]["parameter"];
 
                     var lastBuildStatus = lastBuild["result"].ToString();
