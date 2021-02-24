@@ -253,6 +253,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            string sId = string.Empty;
             try
             {
                 if (stepContext.Result != null)
@@ -263,7 +264,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     FeedbackEntity feedbackEntity = new FeedbackEntity();
                     feedbackEntity.PartitionKey = stepContext.Context.Activity.From.Name;
                     feedbackEntity.RowKey = guid = Guid.NewGuid().ToString();
-                    string sId = stepContext.Context.Activity.From.AadObjectId;
+                    sId = stepContext.Context.Activity.From.AadObjectId;
                     feedbackEntity.Role = storageHelper.GetRole(Configuration, sId, sId).Result;
                     feedbackEntity.Status = "False";
                     feedbackEntity.FeedBack = string.Empty;
@@ -307,7 +308,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
             }
             catch (Exception ex)
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(ex.Message/*Configuration["CustomMsg"]*/ + getUserName(stepContext) + ".\n"), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(ex.Message/*Configuration["CustomMsg"]*/ + getUserName(stepContext)+":"+ sId + ".\n"), cancellationToken);
                 return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
 
             }
