@@ -90,8 +90,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 {
                     StorageHelper storageHelper = new StorageHelper();
                     strUser = stepContext.Context.Activity.From.Name;
-                    string strAaId = stepContext.Context.Activity.From.AadObjectId;
-                    //string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
+                    //string strAaId = stepContext.Context.Activity.From.AadObjectId;
+                    string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
                     string[] userName = new string[2];
                     if (!string.IsNullOrEmpty(strUser))
                         userName = strUser.Split(" ");
@@ -750,16 +750,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                             deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICMS_Realtime_Deploy/job/icms_deployer";
                             msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         }
-                        else if (strProject == "DB-Deployment")
-                        {
-                            //
-                            deployJob = Configuration["JenkinsBuildDeploymentURL"]+ "/jenkins";
-                            msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
-                        }
-
                         else
-                            //msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console)";
-                        msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
+                            msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console)";
                         await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
                     }
                 }
