@@ -561,7 +561,7 @@ namespace CoreBot.Dialogs
             }
         }
         private async Task<DialogTurnResult> CaptureEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {  //var bookingDetails = await LuisHelper.ExecuteLuisQuery(Configuration, Logger, stepContext.Context, cancellationToken);
+        {  ///var bookingDetails = await LuisHelper.ExecuteLuisQuery(Configuration, Logger, stepContext.Context, cancellationToken);
             var entitiDetails = (EntitiDetails)stepContext.Options;
             if (stepContext.Index > 11 || (bool)stepContext.Result)
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Enter your cotiviti email id to receive the status") }, cancellationToken);
