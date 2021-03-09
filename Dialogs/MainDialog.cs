@@ -90,8 +90,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 {
                     StorageHelper storageHelper = new StorageHelper();
                     strUser = stepContext.Context.Activity.From.Name;
-                    string strAaId = stepContext.Context.Activity.From.AadObjectId;
-                    ////string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
+                    //string strAaId = stepContext.Context.Activity.From.AadObjectId;
+                    string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
                     string[] userName = new string[2];
                     if (!string.IsNullOrEmpty(strUser))
                         userName = strUser.Split(" ");
@@ -490,10 +490,43 @@ namespace Microsoft.BotBuilderSamples.Dialogs
             {
                 strTag = "Regression";
                 entitiDetails.Tag = "Sanity";
+                string tagVal = string.Empty;
 
                 JenkinsService jenkinsService = new JenkinsService();
                 var lastBuild = jenkinsService.getLastBuildStatus(entitiDetails.Project).Result;
                 var lastBuildType = lastBuild["actions"];
+                bool bln1 = false;
+                try
+                {   
+                    var doc = lastBuildType.ToString();
+                    JToken entireJson = JToken.Parse(doc);
+                    foreach (var c1 in entireJson.Children())
+                    {
+                        foreach (var c2 in c1.Children())
+                        {
+                            bool bln = c2.ToString().Contains("parameters");
+                            if (bln)
+                            {
+                                foreach (var c3 in c2.Children().Children())
+                                {
+                                    if (c3.ToString().Contains("TagName"))
+                                    {
+                                        tagVal = c3.ToString().Split(new string[] { "value" }, StringSplitOptions.None).Last().Replace(":", "").Replace("}", "").Replace('"', ' ').Trim();
+                                        bln1 = true;
+                                        break;
+                                    }
+                                }                               
+                            }
+                            if (bln1) break;
+                        }
+                        if (bln1) break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    return await stepContext.EndDialogAsync(MessageFactory.Text("Exception : While retrieving the last build "+e.Message), cancellationToken);
+                }
+
 
                 //if (lastBuild != null)
                 //{
@@ -507,25 +540,26 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 //        await stepContext.Context.SendActivityAsync(MessageFactory.Text("Same user or some other user has already triggerd this project test execution please try after some time."), cancellationToken);
                 //        return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
                 //    }
-                //    else if (sTagType == "@Sanity" || sTagType == "@Regression")
-                //    {
-                //        var lastBuildTime = (long)lastBuild["timestamp"];
 
-                //        var timeStamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
+                if (tagVal == "@Sanity" || tagVal == "@Regression")
+                {
+                    var lastBuildTime = (long)lastBuild["timestamp"];
 
-                //        var timeDiference = (timeStamp - lastBuildTime);
+                    var timeStamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
 
-                //        var timeMinutes = timeDiference / (1000 * 60);
-                //        if (timeMinutes <= 1200)
-                //        {
-                //            var url = lastBuild["url"].ToString() + "Serenity_20Report/";
-                //            await stepContext.Context.SendActivityAsync(MessageFactory.Text("This is already executed in last one hour click on the link to view results: [Regression Results](" + url + ")"), cancellationToken);
-                //            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+                    var timeDiference = (timeStamp - lastBuildTime);
 
-                //        }
-                //    }
-                //}
-            }
+                    var timeMinutes = timeDiference / (1000 * 60);
+                    if (timeMinutes <= 1200)
+                    {
+                        var url = lastBuild["url"].ToString() + "Serenity_20Report/";
+                        await stepContext.Context.SendActivityAsync(MessageFactory.Text("This is already executed in last one hour click on the link to view results: [Regression Results](" + url + ")"), cancellationToken);
+                        return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+
+                    }
+                 }
+                   
+              }
             else if (entitiDetails.Tag.ToUpper() == "REGRESSION" && entitiDetails.Project == "CCV-CIT")
             {
                 entitiDetails.Tag = "Sanity";
