@@ -90,8 +90,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 {
                     StorageHelper storageHelper = new StorageHelper();
                     strUser = stepContext.Context.Activity.From.Name;
-                    //string strAaId = stepContext.Context.Activity.From.AadObjectId;
-                    string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
+                    string strAaId = stepContext.Context.Activity.From.AadObjectId;
+                    //string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
                     string[] userName = new string[2];
                     if (!string.IsNullOrEmpty(strUser))
                         userName = strUser.Split(" ");
