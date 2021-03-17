@@ -5,4 +5,7 @@
 /.vs/CoreBot
 /bin/Debug/netcoreapp2.1
 /obj/Debug/netcoreapp2.1
-/.vs/CoreBot
+/.vs
+/bin
+/obj
+
