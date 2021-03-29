@@ -174,6 +174,10 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         eDetails.Score = 0.9;
                         eDetails.Intent = "TestDataGeneration";
                         break;
+                    case "KT Recordings":
+                        eDetails.Score = 0.9;
+                        eDetails.Intent = "KTRecordings";
+                        break;
                 }
 
             }
@@ -208,6 +212,12 @@ namespace Microsoft.BotBuilderSamples.Dialogs
 
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Click on the link: [Useful Links](https://floraafeedback.z13.web.core.windows.net/CotivitiUsefulLink.html)"), cancellationToken);
                 return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            }
+            else if(eDetails.Intent == "KTRecordings")
+            {
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Click on the link: [KT Recordings](https://cotiviti.sharepoint.com/sites/IVAutomationTeam/Recordings/Forms/AllItems.aspx)"), cancellationToken);
+                return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+
             }
             if ((string.IsNullOrEmpty(eDetails.Intent) || eDetails.Score < 0.5))
             {
@@ -943,7 +953,9 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     cardOptions.Add(new Choice() { Value = "RuleRelationShip" });
                 if (action.Equals("TestDataGeneration"))
                     cardOptions.Add(new Choice() { Value = "Test Data Generation" });
-            }
+                if(action.Equals("KTRecordings"))
+                    cardOptions.Add(new Choice() { Value = "KT Recordings" });
+            }           
             return cardOptions;
         }
 
