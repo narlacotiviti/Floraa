@@ -55,6 +55,7 @@ namespace CoreBot.Dialogs
                 FinalStepAsync,
             }));
 
+            //trinath
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }

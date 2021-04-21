@@ -39,6 +39,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
         private bool isContinue = false;
 
         //private IHostingEnvironment _hostingEnvironment;
+        //trinath
         private string strRole = string.Empty;
         private string strUser = string.Empty;
         private string strIntent = string.Empty;
