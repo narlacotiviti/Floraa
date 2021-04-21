@@ -177,8 +177,8 @@ namespace CoreBot.Dialogs
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 dic.Add("LotusNotes", "LEI_Start_Stop");
                 dic.Add("delphix", "dx_vdb_operations");
-                //dic.Add("DataBase-Refresh", "DB-Refresh");
-                if (entitiDetails.ScriptName == "DataBase-Refresh")
+                
+                if (entitiDetails.ScriptName == "Database-Refresh")
                 { 
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
                 }
@@ -238,9 +238,9 @@ namespace CoreBot.Dialogs
                 entitiDetails.ScriptName = entitiDetails.ScriptName == "Schema Wise" ? "Schema Wise/" + stepContext.Result.ToString() : stepContext.Result.ToString();
             else if (entitiDetails.Project == "DB-Operations")
             {
-                if(entitiDetails.ScriptName != "DataBase-Refresh")
+                if(entitiDetails.ScriptName != "Database-Refresh")
                     entitiDetails.ScheduledOption = ((FoundChoice)stepContext.Result).Value.ToString();
-                if (entitiDetails.ScriptName == "LotusNotes" || entitiDetails.ScriptName == "DataBase-Refresh")
+                if (entitiDetails.ScriptName == "LotusNotes" || entitiDetails.ScriptName == "Database-Refresh")
                     return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions
                     {
@@ -545,8 +545,19 @@ namespace CoreBot.Dialogs
                     msg = $"Please confirm, Do you want to proceed with RMI deployment on {entitiDetails.Environment} environment for {entitiDetails.Repo} repository?";
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
                 case "DB-Operations":
-                    msg = $"Please confirm, Do you want to perform {entitiDetails.ScheduledOption} operation on {entitiDetails.ScriptName} ?";
+
+                    if (entitiDetails.ScriptName.Equals("Database-Refresh"))
+                    {
+                        msg = $"Please confirm, Do you want to perform {entitiDetails.ScriptName} operation on {entitiDetails.Environment} ?";
+                    }
+                    else
+                    {
+
+                        msg = $"Please confirm, Do you want to perform {entitiDetails.ScheduledOption} operation on {entitiDetails.ScriptName} ?";
+                        
+                    }
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
+
                 case "ClientInquiry-Deployment":
                     msg = $"Please confirm, Do you want to proceed with Client Inquiry deployment in {entitiDetails.Environment} with version {entitiDetails.Buildversion} ?";
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
@@ -602,7 +613,7 @@ namespace CoreBot.Dialogs
                 new Choice() { Value = "Build-Artifact",  Synonyms = new List<string>() { "Build Artifact" } },
                 new Choice() { Value = "ICMS-Realtime-Fuse",  Synonyms = new List<string>() { "ICMS-Realtime-Fuse" } },
                 new Choice() { Value = "ICM-Jar-Deploy",  Synonyms = new List<string>() { "ICM-Jar-Deploy" } },
-                //new Choice() { Value = "DataBase-Refresh",  Synonyms = new List<string>() { "DataBase-Refresh" } },
+                
             };
                     return cardOptions;
                 case "DB-DEPLOYMENT":
@@ -618,7 +629,7 @@ namespace CoreBot.Dialogs
             {
                 new Choice() { Value = "LotusNotes", Synonyms = new List<string>() { "LotusNotes" } },
                 new Choice() { Value = "delphix", Synonyms = new List<string>() { "LotusNotes" } },
-                new Choice() { Value = "DataBase-Refresh", Synonyms = new List<string>() { "DataBase-Refresh" } },
+                new Choice() { Value = "Database-Refresh", Synonyms = new List<string>() { "Database-Refresh" } },
             };
                     return cardOptions;
                 case "LOTUSNOTES":
@@ -691,7 +702,7 @@ namespace CoreBot.Dialogs
                     return cardOptions;
                 case "DB-Operations":
 
-                    if (dbScript.Equals("DataBase-Refresh"))
+                    if (dbScript.Equals("Database-Refresh"))
                     {
                         cardOptions = new List<string>() { "VPMSPTE", "VPMDEMO", "VPMCICD" };
 

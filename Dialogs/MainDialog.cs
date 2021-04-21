@@ -722,7 +722,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                             buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=" + sToken + "&Operation=" + entitiDetails.ScheduledOption + "&" + strJob + "=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
                             strJob = entitiDetails.DBDeploymenttype;
                         }
-                        else if (entitiDetails.ScriptName=="DataBase-Refresh")
+                        else if (entitiDetails.ScriptName== "Database-Refresh")
                         {
                             buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/DB_Refresh_Pipeline/buildWithParameters?token=db_refresh&DATABASE_NAME=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
                            
