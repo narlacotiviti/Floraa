@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\trinath.kumar\\source\\repos\\Floraa\\CoreBot.csproj": {}
+    "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\CoreBot.csproj": {}
   },
   "projects": {
-    "C:\\Users\\trinath.kumar\\source\\repos\\Floraa\\CoreBot.csproj": {
+    "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\CoreBot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\trinath.kumar\\source\\repos\\Floraa\\CoreBot.csproj",
+        "projectUniqueName": "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\CoreBot.csproj",
         "projectName": "CoreBot",
-        "projectPath": "C:\\Users\\trinath.kumar\\source\\repos\\Floraa\\CoreBot.csproj",
+        "projectPath": "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\CoreBot.csproj",
         "packagesPath": "C:\\Users\\trinath.kumar\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\trinath.kumar\\source\\repos\\Floraa\\obj\\",
+        "outputPath": "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\trinath.kumar\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -213,7 +213,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Click on the link: [Useful Links](https://floraafeedback.z13.web.core.windows.net/CotivitiUsefulLink.html)"), cancellationToken);
                 return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
             }
-            else if(eDetails.Intent == "KTRecordings")
+            else if (eDetails.Intent == "KTRecordings")
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Click on the link: [KT Recordings](https://cotiviti.sharepoint.com/sites/IVAutomationTeam/Recordings/Forms/AllItems.aspx)"), cancellationToken);
                 return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
@@ -318,7 +318,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
             }
             catch (Exception ex)
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(ex.Message/*Configuration["CustomMsg"]*/ + getUserName(stepContext)+":"+ sId + ".\n"), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(ex.Message/*Configuration["CustomMsg"]*/ + getUserName(stepContext) + ":" + sId + ".\n"), cancellationToken);
                 return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
 
             }
@@ -507,7 +507,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 var lastBuildType = lastBuild["actions"];
                 bool bln1 = false;
                 try
-                {   
+                {
                     var doc = lastBuildType.ToString();
                     JToken entireJson = JToken.Parse(doc);
                     foreach (var c1 in entireJson.Children())
@@ -525,7 +525,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                                         bln1 = true;
                                         break;
                                     }
-                                }                               
+                                }
                             }
                             if (bln1) break;
                         }
@@ -534,7 +534,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 }
                 catch (Exception e)
                 {
-                    return await stepContext.EndDialogAsync(MessageFactory.Text("Exception : While retrieving the last build "+e.Message), cancellationToken);
+                    return await stepContext.EndDialogAsync(MessageFactory.Text("Exception : While retrieving the last build " + e.Message), cancellationToken);
                 }
 
 
@@ -567,9 +567,9 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
 
                     }
-                 }
-                   
-              }
+                }
+
+            }
             else if (entitiDetails.Tag.ToUpper() == "REGRESSION" && entitiDetails.Project == "CCV-CIT")
             {
                 entitiDetails.Tag = "Sanity";
@@ -674,83 +674,95 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 strProject = entitiDetails.Project;
                 string strJob = string.Empty;
                 string buildURL = string.Empty;
-                if (strProject == "App-Deployment")
+                switch (strProject)
                 {
-                    strJob = "floraa_qadeployer";
-                    buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/floraa_qadeployer/buildWithParameters?token=floradeploy&Floraa_Intent=" + entitiDetails.Buildwar + "&Email=Support.floraa@cotiviti.com," + entitiDetails.Email + "&Environment=" + entitiDetails.Environment.ToLower() + "&DeployedThru=Floraa&Force=" + entitiDetails.isForceDeployment.ToString().ToLower() + "&DeployedBy=" + stepContext.Context.Activity.From.Name;
-                }
-                else if (strProject == "DB-Deployment")
-                {
-                    strJob = entitiDetails.DBDeploymenttype;
-                    if (entitiDetails.ScriptName.Equals("PM.SQL"))
-                        buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradbdeploy&Script_Name=" + entitiDetails.ScriptName + "&DBInstance=" + entitiDetails.DbInstance + "&Upgrades_FolderName=" + entitiDetails.Buildwar + "&EmailRecipients=" + entitiDetails.Email + "&Repository_Name=" + entitiDetails.Repo + "&DB_RESTRICT_MODE=" + entitiDetails.isDBRestricted + "&CODE_CUTOFF=" + entitiDetails.codeCutOff + "&Sprint_Name=" + entitiDetails.SprintName + "&DeployedThru=Floraa";
-                    else if (entitiDetails.ScriptName.Equals("ICMSDB.SQL"))
-                        buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradbdeploy&Script_Name=" + entitiDetails.ScriptName + "&DBInstance=" + entitiDetails.DbInstance + "&Upgrades_FolderName=" + entitiDetails.Buildwar + "&EmailRecipients=" + entitiDetails.Email + "&Repository_Name=" + entitiDetails.Repo + "&DB_Snapshot=" + entitiDetails.codeCutOff + "&DeployedThru=Floraa";
-                    else
-                        buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradbdeploy&Script_Name=" + entitiDetails.ScriptName + "&DBInstance=" + entitiDetails.DbInstance + "&Upgrades_FolderName=" + entitiDetails.Buildwar + "&EmailRecipients=" + entitiDetails.Email + "&Repository_Name=" + entitiDetails.Repo + "&DeployedThru=Floraa";
-                    deployJob = Configuration["JenkinsBuildDeploymentURL"];
-                }
-                else if (strProject == "Informatica-Deployment")
-                {
-                    strJob = "INFORMATICA_DEPLOYMENT";
-                    buildURL = Configuration["ETLDeploymentURL"] + "/jenkins/job/INFORMATICA_DEPLOYMENT/buildWithParameters?token=floradeploy&ENV=" + entitiDetails.Environment.ToUpper() + "&BRANCH=" + entitiDetails.Repo + "&VERSIONS=" + entitiDetails.Buildversion + "&ZipFile=" + entitiDetails.File.Trim() + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
-                    deployJob = Configuration["ETLDeploymentURL"];
+                    case "App-Deployment":
+
+                        strJob = "floraa_qadeployer";
+                        buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/floraa_qadeployer/buildWithParameters?token=floradeploy&Floraa_Intent=" + entitiDetails.Buildwar + "&Email=Support.floraa@cotiviti.com," + entitiDetails.Email + "&Environment=" + entitiDetails.Environment.ToLower() + "&DeployedThru=Floraa&Force=" + entitiDetails.isForceDeployment.ToString().ToLower() + "&DeployedBy=" + stepContext.Context.Activity.From.Name;
+
+                        break;
+                    case "DB-Deployment":
+
+                        strJob = entitiDetails.DBDeploymenttype;
+                        if (entitiDetails.ScriptName.Equals("PM.SQL"))
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradbdeploy&Script_Name=" + entitiDetails.ScriptName + "&DBInstance=" + entitiDetails.DbInstance + "&Upgrades_FolderName=" + entitiDetails.Buildwar + "&EmailRecipients=" + entitiDetails.Email + "&Repository_Name=" + entitiDetails.Repo + "&DB_RESTRICT_MODE=" + entitiDetails.isDBRestricted + "&CODE_CUTOFF=" + entitiDetails.codeCutOff + "&Sprint_Name=" + entitiDetails.SprintName + "&DeployedThru=Floraa";
+                        else if (entitiDetails.ScriptName.Equals("ICMSDB.SQL"))
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradbdeploy&Script_Name=" + entitiDetails.ScriptName + "&DBInstance=" + entitiDetails.DbInstance + "&Upgrades_FolderName=" + entitiDetails.Buildwar + "&EmailRecipients=" + entitiDetails.Email + "&Repository_Name=" + entitiDetails.Repo + "&DB_Snapshot=" + entitiDetails.codeCutOff + "&DeployedThru=Floraa";
+                        else
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradbdeploy&Script_Name=" + entitiDetails.ScriptName + "&DBInstance=" + entitiDetails.DbInstance + "&Upgrades_FolderName=" + entitiDetails.Buildwar + "&EmailRecipients=" + entitiDetails.Email + "&Repository_Name=" + entitiDetails.Repo + "&DeployedThru=Floraa";
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
+
+                        break;
+                    case "Informatica-Deployment":
+
+                        strJob = "INFORMATICA_DEPLOYMENT";
+                        buildURL = Configuration["ETLDeploymentURL"] + "/jenkins/job/INFORMATICA_DEPLOYMENT/buildWithParameters?token=floradeploy&ENV=" + entitiDetails.Environment.ToUpper() + "&BRANCH=" + entitiDetails.Repo + "&VERSIONS=" + entitiDetails.Buildversion + "&ZipFile=" + entitiDetails.File.Trim() + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
+                        deployJob = Configuration["ETLDeploymentURL"];
+
+                        break;
+                    case "CIT-Deployment":
+
+                        strJob = "PCA_CIT-WIT_CI_JOBS";
+                        buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/PCA_CIT-WIT_CI_JOBS/job/floraa_CIT-WIT_deployer/buildWithParameters?token=floradeploy&Floraa_Intent=" + entitiDetails.Buildwar + "&Email=Support.floraa@cotiviti.com," + entitiDetails.Email + "&Environment=" + entitiDetails.Environment.ToLower() + "&DeployedThru=Floraa";
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
+
+
+                        break;
+                    case "DB-Operations":
+
+                        string sToken = "lei_ops";
+                        strJob = "Environment";
+                        if (entitiDetails.ScriptName == "delphix")
+                        {
+                            sToken = "dx_ops";
+                            strJob = "VDB_NAME";
+
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=" + sToken + "&Operation=" + entitiDetails.ScheduledOption + "&" + strJob + "=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
+                            strJob = entitiDetails.DBDeploymenttype;
+                        }
+                        else if (entitiDetails.ScriptName=="DataBase-Refresh")
+                        {
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/DB_Refresh_Pipeline/buildWithParameters?token=db_refresh&DATABASE_NAME=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
+                           
+                        }
+                        else
+                        {
+                            entitiDetails.ScheduledOption = entitiDetails.ScheduledOption.ToLower();
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=" + sToken + "&Operation=" + entitiDetails.ScheduledOption + "&" + strJob + "=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
+                            strJob = entitiDetails.DBDeploymenttype;
+                        }
+                         
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
+
+                        break;
+                    case "ClientInquiry-Deployment":
+                    case "Build-Artifact":
+
+                        strJob = entitiDetails.DBDeploymenttype;
+                        if (strProject == "Build-Artifact")
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradeploy&ENVIRONMENT=" + entitiDetails.Environment + (!string.IsNullOrEmpty(entitiDetails.Buildversion) ? "&BRANCH_NAME=" : "") + entitiDetails.Buildversion + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
+                        else
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradeploy&Environment=" + entitiDetails.Environment + "&Version=" + entitiDetails.Buildversion + "&URL=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
+
+                        break;
+                    case "ICMS-Realtime-Fuse":
+                        buildURL = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICMS_Realtime_Deploy/job/icms_deployer/buildWithParameters?token=icms_deploy&Client_Name=" + entitiDetails.Client + "&Artifact_Name=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&Version=" + entitiDetails.Buildversion + "&Environment=" + entitiDetails.Environment.ToLower() + "&Force=" + entitiDetails.isForceDeployment + "&DeployedThru=Floraa";
+                        deployJob = Configuration["ICMDeploymentURL"];
+                        break;
+                    case "ICM-Jar-Deploy":
+                        buildURL = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICM_Batch_Jobs/job/ICM-Jar-Deployment/buildWithParameters?token=floradeploy&ENV=" + entitiDetails.Environment + "&Host=" + entitiDetails.HostName + "&build_no=" + entitiDetails.BuildNumber + "&Version=" + entitiDetails.Buildversion + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
+                        deployJob = Configuration["ICMDeploymentURL"];
+                        break;
+                    default:
+                        strJob = Configuration["RMIDeploymentJob"];
+                        buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + Configuration["RMIDeploymentJob"] + "/buildWithParameters?token=rmifloraadeploy&DBINST=" + entitiDetails.DbInstance + "&HOSTNAME=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&BB_REPO=" + entitiDetails.Repo.ToLower() + "&DeployedThru=Floraa";
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
+                        break;
 
                 }
-                else if (strProject == "CIT-Deployment")
-                {
-                    strJob = "PCA_CIT-WIT_CI_JOBS";
-                    buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/PCA_CIT-WIT_CI_JOBS/job/floraa_CIT-WIT_deployer/buildWithParameters?token=floradeploy&Floraa_Intent=" + entitiDetails.Buildwar + "&Email=Support.floraa@cotiviti.com," + entitiDetails.Email + "&Environment=" + entitiDetails.Environment.ToLower() + "&DeployedThru=Floraa";
-                    deployJob = Configuration["JenkinsBuildDeploymentURL"];
 
-                }
-                else if (strProject == "DB-Operations")
-                {
-                    string sToken = "lei_ops";
-                    strJob = "Environment";
-                    if (entitiDetails.ScriptName == "delphix")
-                    {
-                        sToken = "dx_ops";
-                        strJob = "VDB_NAME";
-                    }
-                    else
-                        entitiDetails.ScheduledOption = entitiDetails.ScheduledOption.ToLower();
-                    buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=" + sToken + "&Operation=" + entitiDetails.ScheduledOption + "&" + strJob + "=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
-                    strJob = entitiDetails.DBDeploymenttype;
-
-                    deployJob = Configuration["JenkinsBuildDeploymentURL"];
-
-                }
-                else if (strProject == "ClientInquiry-Deployment" || strProject == "Build-Artifact")
-                {
-                    strJob = entitiDetails.DBDeploymenttype;
-                    if (strProject == "Build-Artifact")
-                        buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradeploy&ENVIRONMENT=" + entitiDetails.Environment + (!string.IsNullOrEmpty(entitiDetails.Buildversion) ? "&BRANCH_NAME=" : "") + entitiDetails.Buildversion + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
-                    else
-                        buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradeploy&Environment=" + entitiDetails.Environment + "&Version=" + entitiDetails.Buildversion + "&URL=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
-                    deployJob = Configuration["JenkinsBuildDeploymentURL"];
-
-                }
-                else if (strProject == "ICMS-Realtime-Fuse")
-                {
-                    buildURL = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICMS_Realtime_Deploy/job/icms_deployer/buildWithParameters?token=icms_deploy&Client_Name=" + entitiDetails.Client + "&Artifact_Name=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&Version=" + entitiDetails.Buildversion + "&Environment=" + entitiDetails.Environment.ToLower() + "&Force=" + entitiDetails.isForceDeployment + "&DeployedThru=Floraa";
-                    deployJob = Configuration["ICMDeploymentURL"];
-
-                }
-                else if (strProject == "ICM-Jar-Deploy")
-                {
-
-                    buildURL = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICM_Batch_Jobs/job/ICM-Jar-Deployment/buildWithParameters?token=floradeploy&ENV=" + entitiDetails.Environment + "&Host=" + entitiDetails.HostName + "&build_no=" + entitiDetails.BuildNumber + "&Version=" + entitiDetails.Buildversion + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
-                    deployJob = Configuration["ICMDeploymentURL"];
-
-                }
-                else
-                {
-                    strJob = Configuration["RMIDeploymentJob"];
-                    buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + Configuration["RMIDeploymentJob"] + "/buildWithParameters?token=rmifloraadeploy&DBINST=" + entitiDetails.DbInstance + "&HOSTNAME=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&BB_REPO=" + entitiDetails.Repo.ToLower() + "&DeployedThru=Floraa";
-                    deployJob = Configuration["JenkinsBuildDeploymentURL"];
-
-                }
                 HttpWebRequest reqObj = (HttpWebRequest)HttpWebRequest.Create(buildURL);
                 reqObj.Method = "POST";
 
@@ -797,13 +809,13 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         else if (strProject == "DB-Deployment")
                         {
                             //
-                            deployJob = Configuration["JenkinsBuildDeploymentURL"]+ "/jenkins";
+                            deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins";
                             msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         }
 
                         else
                             //msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console)";
-                        msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
+                            msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
                     }
                 }
@@ -953,9 +965,9 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     cardOptions.Add(new Choice() { Value = "RuleRelationShip" });
                 if (action.Equals("TestDataGeneration"))
                     cardOptions.Add(new Choice() { Value = "Test Data Generation" });
-                if(action.Equals("KTRecordings"))
+                if (action.Equals("KTRecordings"))
                     cardOptions.Add(new Choice() { Value = "KT Recordings" });
-            }           
+            }
             return cardOptions;
         }
 

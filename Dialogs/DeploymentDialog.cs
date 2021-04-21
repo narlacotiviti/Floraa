@@ -148,8 +148,8 @@ namespace CoreBot.Dialogs
                      RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                  }, cancellationToken);
             }
-            else
-                return await stepContext.NextAsync(entitiDetails, cancellationToken);
+          
+            return await stepContext.NextAsync(entitiDetails, cancellationToken);
 
         }
         private async Task<DialogTurnResult> EnvironmentStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -176,6 +176,11 @@ namespace CoreBot.Dialogs
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 dic.Add("LotusNotes", "LEI_Start_Stop");
                 dic.Add("delphix", "dx_vdb_operations");
+                //dic.Add("DataBase-Refresh", "DB-Refresh");
+                if (entitiDetails.ScriptName == "DataBase-Refresh")
+                { 
+                    return await stepContext.NextAsync(entitiDetails, cancellationToken);
+                }
                 entitiDetails.DBDeploymenttype = dic[entitiDetails.ScriptName];
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions
@@ -217,6 +222,8 @@ namespace CoreBot.Dialogs
                     RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                 }, cancellationToken);
             }
+           
+               
             return await stepContext.NextAsync(entitiDetails, cancellationToken);
 
         }
@@ -230,23 +237,24 @@ namespace CoreBot.Dialogs
                 entitiDetails.ScriptName = entitiDetails.ScriptName == "Schema Wise" ? "Schema Wise/" + stepContext.Result.ToString() : stepContext.Result.ToString();
             else if (entitiDetails.Project == "DB-Operations")
             {
-                entitiDetails.ScheduledOption = ((FoundChoice)stepContext.Result).Value.ToString();
-                if (entitiDetails.ScriptName == "LotusNotes")
+                if(entitiDetails.ScriptName != "DataBase-Refresh")
+                    entitiDetails.ScheduledOption = ((FoundChoice)stepContext.Result).Value.ToString();
+                if (entitiDetails.ScriptName == "LotusNotes" || entitiDetails.ScriptName == "DataBase-Refresh")
                     return await stepContext.PromptAsync(nameof(ChoicePrompt),
-        new PromptOptions
-        {
-            Prompt = MessageFactory.Text("Please select the Environment"),
-            Choices = ChoiceFactory.ToChoices(GetEnvironments(entitiDetails.Project, string.IsNullOrEmpty(entitiDetails.ScriptName) ? string.Empty : entitiDetails.ScriptName)),
-            RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
-        }, cancellationToken);
+                    new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text("Please select the Environment"),
+                        Choices = ChoiceFactory.ToChoices(GetEnvironments(entitiDetails.Project, string.IsNullOrEmpty(entitiDetails.ScriptName) ? string.Empty : entitiDetails.ScriptName)),
+                        RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+                    }, cancellationToken);
                 else
-                    return await stepContext.PromptAsync(nameof(ChoicePrompt),
-       new PromptOptions
-       {
-           Prompt = MessageFactory.Text("Please select the VDB"),
-           Choices = ChoiceFactory.ToChoices(GetEnvironments("VDB", string.IsNullOrEmpty(entitiDetails.ScriptName) ? string.Empty : entitiDetails.ScriptName)),
-           RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
-       }, cancellationToken);
+                   return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                   new PromptOptions
+                   {
+                       Prompt = MessageFactory.Text("Please select the VDB"),
+                       Choices = ChoiceFactory.ToChoices(GetEnvironments("VDB", string.IsNullOrEmpty(entitiDetails.ScriptName) ? string.Empty : entitiDetails.ScriptName)),
+                       RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+                   }, cancellationToken);
             }
             else if (entitiDetails.Project == "ICM-Jar-Deploy")
             {
@@ -259,27 +267,20 @@ namespace CoreBot.Dialogs
                     RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                 }, cancellationToken);
             }
+           
             else if (entitiDetails.Project == "ICMS-Realtime-Fuse")
             {
                 entitiDetails.Buildversion = ((FoundChoice)stepContext.Result).Value.ToString();
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
-      new PromptOptions
-      {
-          Prompt = MessageFactory.Text("Please select the Environment"),
-          Choices = ChoiceFactory.ToChoices(new List<string> { "QA" }),
-          RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
-      }, cancellationToken);
+              new PromptOptions
+              {
+                  Prompt = MessageFactory.Text("Please select the Environment"),
+                  Choices = ChoiceFactory.ToChoices(new List<string> { "QA" }),
+                  RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+              }, cancellationToken);
             }
-
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
-
-    new PromptOptions
-    {
-        Prompt = MessageFactory.Text("Please select the environment"),
-        Choices = ChoiceFactory.ToChoices(GetEnvironments(entitiDetails.Project, string.IsNullOrEmpty(entitiDetails.ScriptName) ? string.Empty : entitiDetails.ScriptName)),
-        RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
-    }, cancellationToken);
-
+           
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),new PromptOptions{Prompt = MessageFactory.Text("Please select the environment"),Choices = ChoiceFactory.ToChoices(GetEnvironments(entitiDetails.Project, string.IsNullOrEmpty(entitiDetails.ScriptName) ? string.Empty : entitiDetails.ScriptName)),RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),}, cancellationToken);
 
         }
         private async Task<DialogTurnResult> DbInstanceStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -349,6 +350,7 @@ namespace CoreBot.Dialogs
                 entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter the version to be deployed") }, cancellationToken);
             }
+           
             else
             {
                 if (entitiDetails.Buildwar == null && entitiDetails.Project != "ClientInquiry-Deployment")
@@ -599,6 +601,7 @@ namespace CoreBot.Dialogs
                 new Choice() { Value = "Build-Artifact",  Synonyms = new List<string>() { "Build Artifact" } },
                 new Choice() { Value = "ICMS-Realtime-Fuse",  Synonyms = new List<string>() { "ICMS-Realtime-Fuse" } },
                 new Choice() { Value = "ICM-Jar-Deploy",  Synonyms = new List<string>() { "ICM-Jar-Deploy" } },
+                //new Choice() { Value = "DataBase-Refresh",  Synonyms = new List<string>() { "DataBase-Refresh" } },
             };
                     return cardOptions;
                 case "DB-DEPLOYMENT":
@@ -614,9 +617,11 @@ namespace CoreBot.Dialogs
             {
                 new Choice() { Value = "LotusNotes", Synonyms = new List<string>() { "LotusNotes" } },
                 new Choice() { Value = "delphix", Synonyms = new List<string>() { "LotusNotes" } },
+                new Choice() { Value = "DataBase-Refresh", Synonyms = new List<string>() { "DataBase-Refresh" } },
             };
                     return cardOptions;
                 case "LOTUSNOTES":
+             
                     cardOptions = new List<Choice>()
             {
                 new Choice() { Value = "Start", Synonyms = new List<string>() { "Start" } },
@@ -684,7 +689,17 @@ namespace CoreBot.Dialogs
                         cardOptions = new List<string>() { "LOCAL", "DEV", "QA", "UAT", "PRE-PROD" };
                     return cardOptions;
                 case "DB-Operations":
-                    cardOptions = new List<string>() { "SPTE", "DEMO", "CICD" };
+
+                    if (dbScript.Equals("DataBase-Refresh"))
+                    {
+                        cardOptions = new List<string>() { "VPMSPTE", "VPMDEMO", "VPMCICD" };
+
+                    }
+                    else
+                    {
+                        cardOptions = new List<string>() { "SPTE", "DEMO", "CICD" };
+                    }
+                    
 
                     return cardOptions;
                 case "VDB":

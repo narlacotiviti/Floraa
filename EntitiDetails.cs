@@ -34,6 +34,7 @@ namespace Microsoft.BotBuilderSamples
         public string ScriptName { get; set; }
         public string Role { get; set; }
         public string SprintName { get; set; }
+        public string DATABASE_NAME { get; set; }
     }
 
     public class ManageRule
