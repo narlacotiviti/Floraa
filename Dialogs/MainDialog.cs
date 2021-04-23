@@ -757,6 +757,11 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         buildURL = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICM_Batch_Jobs/job/ICM-Jar-Deployment/buildWithParameters?token=floradeploy&ENV=" + entitiDetails.Environment + "&Host=" + entitiDetails.HostName + "&build_no=" + entitiDetails.BuildNumber + "&Version=" + entitiDetails.Buildversion + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
                         deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICM_Batch_Jobs/job/ICM-Jar-Deployment";
                         break;
+                    case "CAT-Clientimplementation":
+                        buildURL= Configuration["CCVPayerConfig"] + "/jenkins/job/CCV-Payer-Configuration/job/CCV_CAT_clientimplementation/buildWithParameters?token=floradeploy&BRANCH_NAME="+ entitiDetails.CCVBranchName + "&ENVIRONMENT="+ entitiDetails.Environment+ "&TriggeredThru=Floraa"+"&EmailRecipients=" + entitiDetails.Email ;
+                        deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/CCV-Payer-Configuration/job/CCV_CAT_clientimplementation";
+                        break;
+
                     default:
                         strJob = Configuration["RMIDeploymentJob"];
                         buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + Configuration["RMIDeploymentJob"] + "/buildWithParameters?token=rmifloraadeploy&DBINST=" + entitiDetails.DbInstance + "&HOSTNAME=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&BB_REPO=" + entitiDetails.Repo.ToLower() + "&DeployedThru=Floraa";

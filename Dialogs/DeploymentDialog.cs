@@ -85,6 +85,15 @@ namespace CoreBot.Dialogs
               Style = ListStyle.Auto,
               RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
           }, cancellationToken);
+            else if(entitiDetails.Portfolio.Equals("CCV"))
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+          new PromptOptions
+          {
+              Prompt = MessageFactory.Text("Please select the project"),
+              Choices = ChoiceFactory.ToChoices(new List<string> { "CAT-Clientimplementation"}),
+              Style = ListStyle.HeroCard,
+              RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+          }, cancellationToken);
             else
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("No deployments are enabled for selected portfolio. please try with other option "), cancellationToken);
@@ -149,7 +158,7 @@ namespace CoreBot.Dialogs
                      RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                  }, cancellationToken);
             }
-          
+            
             return await stepContext.NextAsync(entitiDetails, cancellationToken);
 
         }
@@ -224,7 +233,6 @@ namespace CoreBot.Dialogs
                 }, cancellationToken);
             }
            
-               
             return await stepContext.NextAsync(entitiDetails, cancellationToken);
 
         }
@@ -268,7 +276,18 @@ namespace CoreBot.Dialogs
                     RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                 }, cancellationToken);
             }
-           
+            else if (entitiDetails.Project == "CAT-Clientimplementation")
+            {
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                 new PromptOptions
+                 {
+                     Prompt = MessageFactory.Text("Please select Environment"),
+                     Choices = ChoiceFactory.ToChoices(new List<string> { "DEV","QA", "UAT","PRE-PROD", "PROD" }),
+                     Style = ListStyle.Auto,
+                     RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+                 }, cancellationToken);
+            }
+
             else if (entitiDetails.Project == "ICMS-Realtime-Fuse")
             {
                 entitiDetails.Buildversion = ((FoundChoice)stepContext.Result).Value.ToString();
@@ -346,6 +365,11 @@ namespace CoreBot.Dialogs
                 entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
                 return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Do you want to do a force deployment?") }, cancellationToken);
             }
+            else if (entitiDetails.Project == "CAT-Clientimplementation")
+            {
+                entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
+                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter the branch name") }, cancellationToken);
+            }
             else if (entitiDetails.Project == "ICM-Jar-Deploy")
             {
                 entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
@@ -420,6 +444,9 @@ namespace CoreBot.Dialogs
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
                 case "ICM-Jar-Deploy":
                     entitiDetails.Buildversion = (string)stepContext.Result;
+                    return await stepContext.NextAsync(entitiDetails, cancellationToken);
+                case "CAT-Clientimplementation":
+                    entitiDetails.CCVBranchName = (string)stepContext.Result;
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
                 // return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Do you want to deploy through Floraa?") }, cancellationToken);
                 default:
@@ -570,6 +597,9 @@ namespace CoreBot.Dialogs
                 case "ICM-Jar-Deploy":
                     msg = $"Please confirm, Do you want {entitiDetails.Project} for {entitiDetails.BuildNumber} build number {entitiDetails.Buildversion} version in {entitiDetails.Environment} environment?";
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
+                case "CAT-Clientimplementation":
+                    msg = $"Please confirm, Do you want {entitiDetails.Project} deployement for BranchName {entitiDetails.CCVBranchName} in {entitiDetails.Environment} environment?";
+                    return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
                 default:
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
             }
@@ -659,6 +689,7 @@ namespace CoreBot.Dialogs
             }
         }
 
+    
         private IList<string> GetEnvironments(string strType, string dbScript)
         {
             switch (strType)
