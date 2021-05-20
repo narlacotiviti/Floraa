@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\CoreBot.csproj": {}
+    "C:\\Users\\pradeep.chinthala\\source\\repos\\Floraa\\CoreBot.csproj": {}
   },
   "projects": {
-    "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\CoreBot.csproj": {
+    "C:\\Users\\pradeep.chinthala\\source\\repos\\Floraa\\CoreBot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\CoreBot.csproj",
+        "projectUniqueName": "C:\\Users\\pradeep.chinthala\\source\\repos\\Floraa\\CoreBot.csproj",
         "projectName": "CoreBot",
-        "projectPath": "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\CoreBot.csproj",
-        "packagesPath": "C:\\Users\\trinath.kumar\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\trinath.kumar\\Source\\Repos\\Floraa\\obj\\",
+        "projectPath": "C:\\Users\\pradeep.chinthala\\source\\repos\\Floraa\\CoreBot.csproj",
+        "packagesPath": "C:\\Users\\pradeep.chinthala\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\pradeep.chinthala\\source\\repos\\Floraa\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\trinath.kumar\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\pradeep.chinthala\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -133,7 +133,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
         }
       }
     }

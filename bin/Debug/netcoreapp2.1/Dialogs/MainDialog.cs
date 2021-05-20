@@ -39,6 +39,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
         private bool isContinue = false;
 
         //private IHostingEnvironment _hostingEnvironment;
+        //trinat
         private string strRole = string.Empty;
         private string strUser = string.Empty;
         private string strIntent = string.Empty;
@@ -90,8 +91,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 {
                     StorageHelper storageHelper = new StorageHelper();
                     strUser = stepContext.Context.Activity.From.Name;
-                    //string strAaId = stepContext.Context.Activity.From.AadObjectId;
-                    string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
+                    string strAaId = stepContext.Context.Activity.From.AadObjectId;
+                    //string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
                     string[] userName = new string[2];
                     if (!string.IsNullOrEmpty(strUser))
                         userName = strUser.Split(" ");
@@ -271,7 +272,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     StorageHelper storageHelper = new StorageHelper();
                     var entitiDetails = (EntitiDetails)stepContext.Result;
                     strIntent = entitiDetails.Intent;
-                    /*FeedbackEntity feedbackEntity = new FeedbackEntity();
+                    FeedbackEntity feedbackEntity = new FeedbackEntity();
                     feedbackEntity.PartitionKey = stepContext.Context.Activity.From.Name;
                     feedbackEntity.RowKey = guid = Guid.NewGuid().ToString();
                     sId = stepContext.Context.Activity.From.AadObjectId;
@@ -280,7 +281,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     feedbackEntity.FeedBack = string.Empty;
                     feedbackEntity.Intent = strIntent;
                     feedbackEntity.Project = entitiDetails.Project + "-" + entitiDetails.Tag + "-" + entitiDetails.Buildwar + "-" + entitiDetails.ScriptName;
-                    await storageHelper.StoreFeedback(Configuration, feedbackEntity);*/
+                    await storageHelper.StoreFeedback(Configuration, feedbackEntity);
                     switch (entitiDetails.Intent)
                     {
                         case "Acronym":
@@ -680,7 +681,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
 
                         strJob = "floraa_qadeployer";
                         buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/floraa_qadeployer/buildWithParameters?token=floradeploy&Floraa_Intent=" + entitiDetails.Buildwar + "&Email=Support.floraa@cotiviti.com," + entitiDetails.Email + "&Environment=" + entitiDetails.Environment.ToLower() + "&DeployedThru=Floraa&Force=" + entitiDetails.isForceDeployment.ToString().ToLower() + "&DeployedBy=" + stepContext.Context.Activity.From.Name;
-
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/floraa_qadeployer";
                         break;
                     case "DB-Deployment":
 
@@ -691,22 +692,21 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                             buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradbdeploy&Script_Name=" + entitiDetails.ScriptName + "&DBInstance=" + entitiDetails.DbInstance + "&Upgrades_FolderName=" + entitiDetails.Buildwar + "&EmailRecipients=" + entitiDetails.Email + "&Repository_Name=" + entitiDetails.Repo + "&DB_Snapshot=" + entitiDetails.codeCutOff + "&DeployedThru=Floraa";
                         else
                             buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradbdeploy&Script_Name=" + entitiDetails.ScriptName + "&DBInstance=" + entitiDetails.DbInstance + "&Upgrades_FolderName=" + entitiDetails.Buildwar + "&EmailRecipients=" + entitiDetails.Email + "&Repository_Name=" + entitiDetails.Repo + "&DeployedThru=Floraa";
-                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype;
 
                         break;
                     case "Informatica-Deployment":
 
                         strJob = "INFORMATICA_DEPLOYMENT";
                         buildURL = Configuration["ETLDeploymentURL"] + "/jenkins/job/INFORMATICA_DEPLOYMENT/buildWithParameters?token=floradeploy&ENV=" + entitiDetails.Environment.ToUpper() + "&BRANCH=" + entitiDetails.Repo + "&VERSIONS=" + entitiDetails.Buildversion + "&ZipFile=" + entitiDetails.File.Trim() + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
-                        deployJob = Configuration["ETLDeploymentURL"];
+                        deployJob = Configuration["ETLDeploymentURL"] + "/jenkins/job/INFORMATICA_DEPLOYMENT";
 
                         break;
                     case "CIT-Deployment":
 
                         strJob = "PCA_CIT-WIT_CI_JOBS";
                         buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/PCA_CIT-WIT_CI_JOBS/job/floraa_CIT-WIT_deployer/buildWithParameters?token=floradeploy&Floraa_Intent=" + entitiDetails.Buildwar + "&Email=Support.floraa@cotiviti.com," + entitiDetails.Email + "&Environment=" + entitiDetails.Environment.ToLower() + "&DeployedThru=Floraa";
-                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
-
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/PCA_CIT-WIT_CI_JOBS/job/floraa_CIT-WIT_deployer";
 
                         break;
                     case "DB-Operations":
@@ -717,17 +717,25 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         {
                             sToken = "dx_ops";
                             strJob = "VDB_NAME";
-                        }else if (entitiDetails.ScriptName=="DataBase-Refresh")
+
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=" + sToken + "&Operation=" + entitiDetails.ScheduledOption + "&" + strJob + "=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
+                            strJob = entitiDetails.DBDeploymenttype;
+                            deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype;
+                        }
+                        else if (entitiDetails.ScriptName == "Database-Refresh")
                         {
-                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/DB_Refresh_Pipeline/buildWithParameters?token=floradeploy&DATABASE_NAME=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
-                            deployJob = Configuration["JenkinsBuildDeploymentURL"];
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/DB_Refresh_Pipeline/buildWithParameters?token=db_refresh&DATABASE_NAME=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
+
+                            deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/DB_Refresh_Pipeline";
                         }
                         else
+                        {
                             entitiDetails.ScheduledOption = entitiDetails.ScheduledOption.ToLower();
-                        buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=" + sToken + "&Operation=" + entitiDetails.ScheduledOption + "&" + strJob + "=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
-                        strJob = entitiDetails.DBDeploymenttype;
+                            buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=" + sToken + "&Operation=" + entitiDetails.ScheduledOption + "&" + strJob + "=" + entitiDetails.Environment + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
+                            strJob = entitiDetails.DBDeploymenttype;
 
-                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
+                            deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype;
+                        }
 
                         break;
                     case "ClientInquiry-Deployment":
@@ -738,21 +746,26 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                             buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradeploy&ENVIRONMENT=" + entitiDetails.Environment + (!string.IsNullOrEmpty(entitiDetails.Buildversion) ? "&BRANCH_NAME=" : "") + entitiDetails.Buildversion + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
                         else
                             buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype + "/buildWithParameters?token=floradeploy&Environment=" + entitiDetails.Environment + "&Version=" + entitiDetails.Buildversion + "&URL=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&TriggeredThru=Floraa";
-                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + entitiDetails.DBDeploymenttype;
 
                         break;
                     case "ICMS-Realtime-Fuse":
                         buildURL = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICMS_Realtime_Deploy/job/icms_deployer/buildWithParameters?token=icms_deploy&Client_Name=" + entitiDetails.Client + "&Artifact_Name=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&Version=" + entitiDetails.Buildversion + "&Environment=" + entitiDetails.Environment.ToLower() + "&Force=" + entitiDetails.isForceDeployment + "&DeployedThru=Floraa";
-                        deployJob = Configuration["ICMDeploymentURL"];
+                        deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICMS_Realtime_Deploy/job/icms_deployer";
                         break;
                     case "ICM-Jar-Deploy":
                         buildURL = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICM_Batch_Jobs/job/ICM-Jar-Deployment/buildWithParameters?token=floradeploy&ENV=" + entitiDetails.Environment + "&Host=" + entitiDetails.HostName + "&build_no=" + entitiDetails.BuildNumber + "&Version=" + entitiDetails.Buildversion + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
-                        deployJob = Configuration["ICMDeploymentURL"];
+                        deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICM_Batch_Jobs/job/ICM-Jar-Deployment";
                         break;
+                    case "CAT-Clientimplementation":
+                        buildURL= Configuration["CCVPayerConfig"] + "/jenkins/job/CCV-Payer-Configuration/job/CCV_CAT_clientimplementation/buildWithParameters?token=floradeploy&BRANCH_NAME="+ entitiDetails.CCVBranchName + "&ENVIRONMENT="+ entitiDetails.Environment+ "&TriggeredThru=Floraa"+"&EmailRecipients=" + entitiDetails.Email ;
+                        deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/CCV-Payer-Configuration/job/CCV_CAT_clientimplementation";
+                        break;
+
                     default:
                         strJob = Configuration["RMIDeploymentJob"];
                         buildURL = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + Configuration["RMIDeploymentJob"] + "/buildWithParameters?token=rmifloraadeploy&DBINST=" + entitiDetails.DbInstance + "&HOSTNAME=" + entitiDetails.HostName + "&EmailRecipients=" + entitiDetails.Email + "&BB_REPO=" + entitiDetails.Repo.ToLower() + "&DeployedThru=Floraa";
-                        deployJob = Configuration["JenkinsBuildDeploymentURL"];
+                        deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins/job/" + Configuration["RMIDeploymentJob"];
                         break;
 
                 }
@@ -778,35 +791,25 @@ namespace Microsoft.BotBuilderSamples.Dialogs
 
                         //deployJob = deployJob + "/jenkins/job/" + strJob;
 
-                        int lastbuid = jenkinsService.getLastBuild(deployJob + "/jenkins/job/", deployJob).Result + 1;
+                        //int lastbuid = jenkinsService.getLastBuild(deployJob + "/jenkins/job/", deployJob).Result + 1;
                         if (strProject == "App-Deployment")
-                            msg = "App Deployment with war " + entitiDetails.Buildwar + " to " + entitiDetails.Environment + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
+                            //msg = "App Deployment with war " + entitiDetails.Buildwar + " to " + entitiDetails.Environment + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
+                            msg = "App Deployment with war " + entitiDetails.Buildwar + " to " + entitiDetails.Environment + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         else if (strProject == "ETL - Deployment")
                         {
                             if (!string.IsNullOrEmpty(entitiDetails.File))
-                                msg = entitiDetails.Project + " is initiated. Estimated time to complete the deployment is 5 minutes.You will receive the email once the deployment is completed.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
+                                //msg = entitiDetails.Project + " is initiated. Estimated time to complete the deployment is 5 minutes.You will receive the email once the deployment is completed.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
+                                msg = entitiDetails.Project + " is initiated. Estimated time to complete the deployment is 5 minutes.You will receive the email once the deployment is completed.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                             else
-                                msg = entitiDetails.Project + " is initiated. Estimated time to complete the deployment is 45 minutes.You will receive the email once the deployment is completed.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
-                        }
-                        else if (strProject == "ICM-Jar-Deploy")
-                        {
-                            deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICM_Batch_Jobs/job/ICM-Jar-Deployment";
-
-                            msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
-                        }
-                        else if (strProject == "ICMS-Realtime-Fuse")
-                        {
-                            //
-                            deployJob = Configuration["ICMDeploymentURL"] + "/jenkins/job/ICMS_Realtime_Deploy/job/icms_deployer";
-                            msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
-                        }
-                        else if (strProject == "DB-Deployment")
-                        {
-                            //
-                            deployJob = Configuration["JenkinsBuildDeploymentURL"] + "/jenkins";
-                            msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
+                                //msg = entitiDetails.Project + " is initiated. Estimated time to complete the deployment is 45 minutes.You will receive the email once the deployment is completed.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console) ";
+                                msg = entitiDetails.Project + " is initiated. Estimated time to complete the deployment is 5 minutes.You will receive the email once the deployment is completed.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
                         }
 
+                        else if (entitiDetails.ScriptName == "Database-Refresh")
+                        {
+
+                            msg = entitiDetails.ScriptName + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";
+                        }
                         else
                             //msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + "/" + lastbuid + "/console)";
                             msg = entitiDetails.Project + " is initiated. you will receive the email shortly.\n You can also see the deployment status in below URL: [Click Here](" + deployJob + ")";

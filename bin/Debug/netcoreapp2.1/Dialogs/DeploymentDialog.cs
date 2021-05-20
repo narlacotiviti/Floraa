@@ -55,6 +55,7 @@ namespace CoreBot.Dialogs
                 FinalStepAsync,
             }));
 
+            //trinat
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
@@ -82,6 +83,15 @@ namespace CoreBot.Dialogs
               Prompt = MessageFactory.Text("Please select the project"),
               Choices = GetProjectChoices(entitiDetails.Intent, entitiDetails.Role),
               Style = ListStyle.Auto,
+              RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+          }, cancellationToken);
+            else if(entitiDetails.Portfolio.Equals("CCV"))
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+          new PromptOptions
+          {
+              Prompt = MessageFactory.Text("Please select the project"),
+              Choices = ChoiceFactory.ToChoices(new List<string> { "CAT-Clientimplementation"}),
+              Style = ListStyle.HeroCard,
               RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
           }, cancellationToken);
             else
@@ -148,7 +158,7 @@ namespace CoreBot.Dialogs
                      RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                  }, cancellationToken);
             }
-          
+            
             return await stepContext.NextAsync(entitiDetails, cancellationToken);
 
         }
@@ -176,8 +186,8 @@ namespace CoreBot.Dialogs
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 dic.Add("LotusNotes", "LEI_Start_Stop");
                 dic.Add("delphix", "dx_vdb_operations");
-                //dic.Add("DataBase-Refresh", "DB-Refresh");
-                if (entitiDetails.ScriptName == "DataBase-Refresh")
+                
+                if (entitiDetails.ScriptName == "Database-Refresh")
                 { 
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
                 }
@@ -223,7 +233,6 @@ namespace CoreBot.Dialogs
                 }, cancellationToken);
             }
            
-               
             return await stepContext.NextAsync(entitiDetails, cancellationToken);
 
         }
@@ -237,9 +246,9 @@ namespace CoreBot.Dialogs
                 entitiDetails.ScriptName = entitiDetails.ScriptName == "Schema Wise" ? "Schema Wise/" + stepContext.Result.ToString() : stepContext.Result.ToString();
             else if (entitiDetails.Project == "DB-Operations")
             {
-                if(entitiDetails.ScriptName != "DataBase-Refresh")
+                if(entitiDetails.ScriptName != "Database-Refresh")
                     entitiDetails.ScheduledOption = ((FoundChoice)stepContext.Result).Value.ToString();
-                if (entitiDetails.ScriptName == "LotusNotes" || entitiDetails.ScriptName == "DataBase-Refresh")
+                if (entitiDetails.ScriptName == "LotusNotes" || entitiDetails.ScriptName == "Database-Refresh")
                     return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions
                     {
@@ -267,7 +276,18 @@ namespace CoreBot.Dialogs
                     RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                 }, cancellationToken);
             }
-           
+            else if (entitiDetails.Project == "CAT-Clientimplementation")
+            {
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                 new PromptOptions
+                 {
+                     Prompt = MessageFactory.Text("Please select Environment"),
+                     Choices = ChoiceFactory.ToChoices(new List<string> { "DEV","QA", "UAT","PRE-PROD", "PROD" }),
+                     Style = ListStyle.Auto,
+                     RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+                 }, cancellationToken);
+            }
+
             else if (entitiDetails.Project == "ICMS-Realtime-Fuse")
             {
                 entitiDetails.Buildversion = ((FoundChoice)stepContext.Result).Value.ToString();
@@ -345,6 +365,11 @@ namespace CoreBot.Dialogs
                 entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
                 return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Do you want to do a force deployment?") }, cancellationToken);
             }
+            else if (entitiDetails.Project == "CAT-Clientimplementation")
+            {
+                entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
+                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter the branch name") }, cancellationToken);
+            }
             else if (entitiDetails.Project == "ICM-Jar-Deploy")
             {
                 entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
@@ -419,6 +444,9 @@ namespace CoreBot.Dialogs
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
                 case "ICM-Jar-Deploy":
                     entitiDetails.Buildversion = (string)stepContext.Result;
+                    return await stepContext.NextAsync(entitiDetails, cancellationToken);
+                case "CAT-Clientimplementation":
+                    entitiDetails.CCVBranchName = (string)stepContext.Result;
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
                 // return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Do you want to deploy through Floraa?") }, cancellationToken);
                 default:
@@ -544,8 +572,19 @@ namespace CoreBot.Dialogs
                     msg = $"Please confirm, Do you want to proceed with RMI deployment on {entitiDetails.Environment} environment for {entitiDetails.Repo} repository?";
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
                 case "DB-Operations":
-                    msg = $"Please confirm, Do you want to perform {entitiDetails.ScheduledOption} operation on {entitiDetails.ScriptName} ?";
+
+                    if (entitiDetails.ScriptName.Equals("Database-Refresh"))
+                    {
+                        msg = $"Please confirm, Do you want to perform {entitiDetails.ScriptName} operation on {entitiDetails.Environment} ?";
+                    }
+                    else
+                    {
+
+                        msg = $"Please confirm, Do you want to perform {entitiDetails.ScheduledOption} operation on {entitiDetails.ScriptName} ?";
+                        
+                    }
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
+
                 case "ClientInquiry-Deployment":
                     msg = $"Please confirm, Do you want to proceed with Client Inquiry deployment in {entitiDetails.Environment} with version {entitiDetails.Buildversion} ?";
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
@@ -557,6 +596,9 @@ namespace CoreBot.Dialogs
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
                 case "ICM-Jar-Deploy":
                     msg = $"Please confirm, Do you want {entitiDetails.Project} for {entitiDetails.BuildNumber} build number {entitiDetails.Buildversion} version in {entitiDetails.Environment} environment?";
+                    return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
+                case "CAT-Clientimplementation":
+                    msg = $"Please confirm, Do you want {entitiDetails.Project} deployement for BranchName {entitiDetails.CCVBranchName} in {entitiDetails.Environment} environment?";
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
                 default:
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
@@ -601,7 +643,7 @@ namespace CoreBot.Dialogs
                 new Choice() { Value = "Build-Artifact",  Synonyms = new List<string>() { "Build Artifact" } },
                 new Choice() { Value = "ICMS-Realtime-Fuse",  Synonyms = new List<string>() { "ICMS-Realtime-Fuse" } },
                 new Choice() { Value = "ICM-Jar-Deploy",  Synonyms = new List<string>() { "ICM-Jar-Deploy" } },
-                //new Choice() { Value = "DataBase-Refresh",  Synonyms = new List<string>() { "DataBase-Refresh" } },
+                
             };
                     return cardOptions;
                 case "DB-DEPLOYMENT":
@@ -617,7 +659,7 @@ namespace CoreBot.Dialogs
             {
                 new Choice() { Value = "LotusNotes", Synonyms = new List<string>() { "LotusNotes" } },
                 new Choice() { Value = "delphix", Synonyms = new List<string>() { "LotusNotes" } },
-                new Choice() { Value = "DataBase-Refresh", Synonyms = new List<string>() { "DataBase-Refresh" } },
+                new Choice() { Value = "Database-Refresh", Synonyms = new List<string>() { "Database-Refresh" } },
             };
                     return cardOptions;
                 case "LOTUSNOTES":
@@ -647,6 +689,7 @@ namespace CoreBot.Dialogs
             }
         }
 
+    
         private IList<string> GetEnvironments(string strType, string dbScript)
         {
             switch (strType)
@@ -690,7 +733,7 @@ namespace CoreBot.Dialogs
                     return cardOptions;
                 case "DB-Operations":
 
-                    if (dbScript.Equals("DataBase-Refresh"))
+                    if (dbScript.Equals("Database-Refresh"))
                     {
                         cardOptions = new List<string>() { "VPMSPTE", "VPMDEMO", "VPMCICD" };
 

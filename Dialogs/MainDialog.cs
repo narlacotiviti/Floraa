@@ -177,7 +177,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         break;
                     case "KT Recordings":
                         eDetails.Score = 0.9;
-                        eDetails.Intent = "KTRecording";
+                        eDetails.Intent = "KTRecordings";
                         break;
                 }
 
