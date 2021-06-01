@@ -711,6 +711,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
             {
                 new Choice() { Value = "Config_Tool", Synonyms = new List<string>() { "Config Tool" } },
                 new Choice() { Value = "CCV-CIT", Synonyms = new List<string>() { "CCV CIT", "CCV ISAI" } },
+                new Choice() { Value = "CAT-Rewrite", Synonyms = new List<string>() { "CAT Rewrite" } },
 
             };
                     return cardOptions;
