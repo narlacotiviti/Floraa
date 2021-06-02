@@ -464,7 +464,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
         private async Task<DialogTurnResult> TriggerServiceMethod(WaterfallStepContext stepContext, EntitiDetails entitiDetails, CancellationToken cancellationToken)
         {
             string strTag = "";
-            bool IsCrumbRequired = false;
+            bool IsCrumbRequired = true;
             if (entitiDetails.Tag.ToUpper() == "COMMITFILE")
             {
                 string msg = "";
@@ -616,7 +616,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     entitiDetails.Tag = (entitiDetails.Environment == "PROD") ? entitiDetails.Tag + " and @" + entitiDetails.Environment : entitiDetails.Tag + " and @" + entitiDetails.Environment + " and @" + entitiDetails.Client;
                     sPOSTURL = Configuration["JenkinsURL2"] + "/job/RMS_Execution/buildWithParameters?TagName=@" + entitiDetails.Tag.Replace("QA Backend", "QA_DIRECT").Replace("QA Meca", "QA") + "&EmailID=" + entitiDetails.Email + "&SrcName=Floraa&Environment=" + env;
                 }
-                IsCrumbRequired = true;
+                //IsCrumbRequired = true;
                 strJenkinUrl = Configuration["JenkinsURL2"];
             }
             else
