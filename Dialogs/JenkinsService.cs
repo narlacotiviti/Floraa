@@ -70,8 +70,7 @@ namespace CoreBot.Dialogs
             try
             {
 
-
-                var url = "http://usddccntr03.cotiviti.com:8585/job/" + projectName + "/lastBuild/api/json";
+                var url = "http://usddccntr03.cotiviti.com:8085/job/" + projectName + "/lastBuild/api/json";
                 var client = getHttpClient();
                 HttpResponseMessage response = client.GetAsync(url).Result;
                 response.EnsureSuccessStatusCode();
