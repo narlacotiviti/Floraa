@@ -21,6 +21,7 @@ using System.Xml.Linq;
 using Attachment = Microsoft.Bot.Schema.Attachment;
 using CoreBot.Bots;
 using CoreBot.Helpers;
+using RestSharp;
 
 namespace CoreBot.Dialogs
 {
@@ -299,7 +300,18 @@ namespace CoreBot.Dialogs
                   RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
               }, cancellationToken);
             }
-           
+            else if (entitiDetails.Project == "RDA openshift")
+            {
+                //entitiDetails.Buildversion = ((FoundChoice)stepContext.Result).Value.ToString();
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+              new PromptOptions
+              {
+                  Prompt = MessageFactory.Text("Please select the Environment"),
+                  Choices = ChoiceFactory.ToChoices(new List<string> { "qa","dev","spte","demo"}),
+                  RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+              }, cancellationToken);
+            }
+
             return await stepContext.PromptAsync(nameof(ChoicePrompt),new PromptOptions{Prompt = MessageFactory.Text("Please select the environment"),Choices = ChoiceFactory.ToChoices(GetEnvironments(entitiDetails.Project, string.IsNullOrEmpty(entitiDetails.ScriptName) ? string.Empty : entitiDetails.ScriptName)),RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),}, cancellationToken);
 
         }
@@ -364,6 +376,18 @@ namespace CoreBot.Dialogs
             {
                 entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
                 return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Do you want to do a force deployment?") }, cancellationToken);
+            }
+            else if (entitiDetails.Project == "RDA openshift")
+            {
+                entitiDetails.Environment = ((FoundChoice)stepContext.Result).Value.ToString();
+                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Please select App"),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "rda-business-central-ui-jar", "rda-business-central-services", "rda-business-central-ldap-service", "rda-business-central-email-service", "rda-business-central-login-service" }),
+                    //Style = ListStyle.List,
+                    RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+                }, cancellationToken);
             }
             else if (entitiDetails.Project == "CAT-Clientimplementation")
             {
@@ -448,6 +472,22 @@ namespace CoreBot.Dialogs
                 case "CAT-Clientimplementation":
                     entitiDetails.CCVBranchName = (string)stepContext.Result;
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
+                case "RDA openshift":
+                    {
+                        entitiDetails.RDA_App = ((FoundChoice)stepContext.Result).Value.ToString();
+                        // entitiDetails.HostName = GetICMSClientNames()[entitiDetails.Client];
+
+                        string sApp = entitiDetails.RDA_App;
+
+                        return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                         new PromptOptions
+                         {
+                             Prompt = MessageFactory.Text("Please select the version to deploy"),
+                             Choices = GetBranchesTags(sApp),
+                             Style = ListStyle.List,
+                             RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
+                         }, cancellationToken);
+                    }
                 // return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Do you want to deploy through Floraa?") }, cancellationToken);
                 default:
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
@@ -494,6 +534,12 @@ namespace CoreBot.Dialogs
                 entitiDetails.Buildversion = stepContext.Result.ToString();
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter F5 URL or Node URL to deploy") }, cancellationToken);
             }
+            else if (entitiDetails.Project == "RDA openshift")
+            {
+                entitiDetails.RDA_Tag = ((FoundChoice)stepContext.Result).Value.ToString();
+                //entitiDetails.RDA_Tag = stepContext.Result.ToString();
+                return await stepContext.NextAsync(entitiDetails, cancellationToken);
+            }
             else
                 return await stepContext.NextAsync(entitiDetails, cancellationToken);
         }
@@ -523,6 +569,7 @@ namespace CoreBot.Dialogs
                 entitiDetails.HostName = stepContext.Result.ToString();
                 return await stepContext.NextAsync(entitiDetails, cancellationToken);
             }
+            
             else
                 return await stepContext.NextAsync(entitiDetails, cancellationToken);
         }
@@ -600,6 +647,9 @@ namespace CoreBot.Dialogs
                 case "CAT-Clientimplementation":
                     msg = $"Please confirm, Do you want {entitiDetails.Project} deployement for BranchName {entitiDetails.CCVBranchName} in {entitiDetails.Environment} environment?";
                     return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
+                case "RDA openshift":
+                    msg = $"Please confirm, Do you want {entitiDetails.Project} deployement for App {entitiDetails.RDA_App} for tag {entitiDetails.RDA_Tag} in {entitiDetails.Environment} environment?";
+                    return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
                 default:
                     return await stepContext.NextAsync(entitiDetails, cancellationToken);
             }
@@ -643,7 +693,8 @@ namespace CoreBot.Dialogs
                 new Choice() { Value = "Build-Artifact",  Synonyms = new List<string>() { "Build Artifact" } },
                 new Choice() { Value = "ICMS-Realtime-Fuse",  Synonyms = new List<string>() { "ICMS-Realtime-Fuse" } },
                 new Choice() { Value = "ICM-Jar-Deploy",  Synonyms = new List<string>() { "ICM-Jar-Deploy" } },
-                
+                new Choice() { Value = "RDA openshift", Synonyms = new List<string>() { "RDA" } }
+
             };
                     return cardOptions;
                 case "DB-DEPLOYMENT":
@@ -780,6 +831,29 @@ namespace CoreBot.Dialogs
             return cardOptions;
 
         }
+
+        private IList<Choice> GetBranchesTags(string sAPP)
+        {
+            var client = new RestClient("https://usabuild00.cotiviti.com:5001/v2/"+ sAPP + "/tags/list");
+
+            var request = new RestRequest(Method.GET);
+            
+            IRestResponse response = client.Execute(request);
+
+            var result = response.Content;
+            var res = JsonConvert.DeserializeObject<dynamic>(result);
+            var values = res["tags"];
+            
+            var cardOptions = new List<Choice>();
+            
+            foreach (var value in values)
+               cardOptions.Add(new Choice() { Value = value.ToString() });
+            return cardOptions;
+
+        }
+
+
+
         private Dictionary<string, string> GetCIApplications()
         {
             Dictionary<string, string> dicCIApps = new Dictionary<string, string>();
@@ -878,5 +952,9 @@ namespace CoreBot.Dialogs
                 throw new Exception(e.Message);
             }
         }
+
+
+        
     }
 }
+
