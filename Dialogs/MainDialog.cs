@@ -91,8 +91,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                 {
                     StorageHelper storageHelper = new StorageHelper();
                     strUser = stepContext.Context.Activity.From.Name;
-                    //string strAaId = stepContext.Context.Activity.From.AadObjectId;
-                    string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
+                    string strAaId = stepContext.Context.Activity.From.AadObjectId;
+                    //string strAaId = "73d40a33-182b-4daa-b84b-e66d8f9f62b9";
                     string[] userName = new string[2];
                     if (!string.IsNullOrEmpty(strUser))
                         userName = strUser.Split(" ");
@@ -273,10 +273,10 @@ namespace Microsoft.BotBuilderSamples.Dialogs
             {
                 if (stepContext.Result != null)
                 {
-                    //StorageHelper storageHelper = new StorageHelper();
+                    StorageHelper storageHelper = new StorageHelper();
                     var entitiDetails = (EntitiDetails)stepContext.Result;
                     strIntent = entitiDetails.Intent;
-                    /*FeedbackEntity feedbackEntity = new FeedbackEntity();
+                    FeedbackEntity feedbackEntity = new FeedbackEntity();
                     feedbackEntity.PartitionKey = stepContext.Context.Activity.From.Name;
                     feedbackEntity.RowKey = guid = Guid.NewGuid().ToString();
                     sId = stepContext.Context.Activity.From.AadObjectId;
@@ -284,8 +284,8 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                     feedbackEntity.Status = "False";
                     feedbackEntity.FeedBack = string.Empty;
                     feedbackEntity.Intent = strIntent;
-                    feedbackEntity.Project = entitiDetails.Project + "-" + entitiDetails.Tag + "-" + entitiDetails.Buildwar + "-" + entitiDetails.ScriptName;*/
-                    //await storageHelper.StoreFeedback(Configuration, feedbackEntity);
+                    feedbackEntity.Project = entitiDetails.Project + "-" + entitiDetails.Tag + "-" + entitiDetails.Buildwar + "-" + entitiDetails.ScriptName;
+                    await storageHelper.StoreFeedback(Configuration, feedbackEntity);
                     switch (entitiDetails.Intent)
                     {
                         case "Acronym":
