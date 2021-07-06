@@ -707,7 +707,7 @@ namespace Microsoft.BotBuilderSamples.Dialogs
                         break;
                     case "RDA openshift":
 
-                        buildURL = Configuration["ETLDeploymentURL"] + "/jenkins/view/RDA/job/PCA_REFDAT/job/OpenshiftDeployment/job/RDA-Deployment/buildWithParameters?token=floradeploy&ENV=" + entitiDetails.Environment.ToUpper() + "&APP=" + entitiDetails.RDA_App + "&NAMESPACE=" + "rd-pca-ipde-dev" + "&Tag=" + entitiDetails.RDA_Tag + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
+                        buildURL = Configuration["ETLDeploymentURL"] + "/jenkins/view/RDA/job/PCA_REFDAT/job/OpenshiftDeployment/job/RDA-Deployment/buildWithParameters?token=floradeploy&ENV=" + entitiDetails.Environment.ToLower() + "&APP=" + entitiDetails.RDA_App + "&NAMESPACE=" + "rd-pca-ipde-dev" + "&Tag=" + entitiDetails.RDA_Tag + "&EmailRecipients=" + entitiDetails.Email + "&DeployedThru=Floraa";
                         deployJob = Configuration["ETLDeploymentURL"] + "/jenkins/view/RDA/job/PCA_REFDAT/job/OpenshiftDeployment/job/RDA-Deployment";
 
                         break;
