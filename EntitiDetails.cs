@@ -5,6 +5,8 @@ namespace Microsoft.BotBuilderSamples
 {
     public class EntitiDetails
     {
+       
+
         public string Intent { get; set; }
         public double Score { get; set; }
         public string Acronym { get; set; }
@@ -36,6 +38,8 @@ namespace Microsoft.BotBuilderSamples
         public string SprintName { get; set; }
         public string DATABASE_NAME { get; set; }
         public string CCVBranchName { get; set; }
+        public string RDA_App { get; set; }
+        public string RDA_Tag { get; set; }
     }
 
     public class ManageRule
