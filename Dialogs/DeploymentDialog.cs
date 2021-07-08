@@ -307,7 +307,7 @@ namespace CoreBot.Dialogs
               new PromptOptions
               {
                   Prompt = MessageFactory.Text("Please select the Environment"),
-                  Choices = ChoiceFactory.ToChoices(new List<string> { "qa","dev","spte","demo"}),
+                  Choices = ChoiceFactory.ToChoices(new List<string> { "dev","spte","qa","demo"}),
                   RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
               }, cancellationToken);
             }
@@ -384,7 +384,7 @@ namespace CoreBot.Dialogs
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Please select App"),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { "rda-business-central-ui-jar", "rda-business-central-services", "rda-business-central-ldap-service", "rda-business-central-email-service", "rda-business-central-login-service" }),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "rdm-app-service", "rda-business-central-ui-jar", "rda-business-central-services", "rda-business-central-ldap-service", "rda-business-central-email-service", "rda-business-central-login-service" }),
                     //Style = ListStyle.List,
                     RetryPrompt = MessageFactory.Text("Sorry, I'm still learning. Please provide the valid option or below mentioned Sequence Number."),
                 }, cancellationToken);
